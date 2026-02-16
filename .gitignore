@@ -31,7 +31,9 @@ Thumbs.db
 
 # Code Signing Certificates (keep private)
 *.pfx
+*.cer
 824AI-cert.pfx
+824AI-cert.cer
 
 # Cache
 .cache/
