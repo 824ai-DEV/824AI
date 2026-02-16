@@ -1,32 +1,37 @@
 @echo off
-REM 824AI Quick Start
-REM Double-click this file to run 824AI
+REM ==========================================
+REM   824AI - Quick Launch
+REM   Just double-click this file!
+REM ==========================================
 
-setlocal enabledelayedexpansion
-
-title 824AI - Starting...
+title 824AI
 
 cd /d "%~dp0"
 
-REM Check if Node.js is installed
-where node >nul 2>&1
-if %errorLevel% neq 0 (
+REM ---- Check if installed ----
+if not exist "node_modules\.bin\electron.cmd" (
     echo.
-    echo ERROR: Node.js is not installed.
-    echo Please run INSTALL.bat first.
+    echo 824AI is not installed yet!
+    echo.
+    echo Please double-click INSTALL.bat first.
     echo.
     pause
     exit /b 1
 )
 
 echo Starting 824AI...
+echo (First launch takes 1-3 minutes to load the model)
 echo.
 
-call npm start
+call npx electron .
 if %errorLevel% neq 0 (
     echo.
-    echo ERROR: Failed to start 824AI
-    echo Please run INSTALL.bat again
+    echo 824AI closed with an error.
+    echo.
+    echo Troubleshooting:
+    echo   1. Run INSTALL.bat again
+    echo   2. Make sure llama-server.exe is in the llama folder
+    echo   3. Make sure the .gguf model file is in the llama folder
     echo.
     pause
 )
