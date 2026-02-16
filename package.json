@@ -1,0 +1,155 @@
+{
+  "name": "824ai",
+  "version": "1.0.0",
+  "description": "824AI desktop app",
+  "main": "app/main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:win:signed": "npm run dist:win && powershell -ExecutionPolicy Bypass -File sign-executables.ps1"
+  },
+  "build": {
+    "appId": "com.824ai.app",
+    "productName": "824AI",
+    "directories": {
+      "output": "dist",
+      "buildResources": "assets"
+    },
+    "files": [
+      "app/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "llama/llama-server.exe",
+        "to": "llama/llama-server.exe"
+      },
+      {
+        "from": "llama/ggml.dll",
+        "to": "llama/ggml.dll"
+      },
+      {
+        "from": "llama/ggml-base.dll",
+        "to": "llama/ggml-base.dll"
+      },
+      {
+        "from": "llama/ggml-cpu-alderlake.dll",
+        "to": "llama/ggml-cpu-alderlake.dll"
+      },
+      {
+        "from": "llama/ggml-cpu-cannonlake.dll",
+        "to": "llama/ggml-cpu-cannonlake.dll"
+      },
+      {
+        "from": "llama/ggml-cpu-cascadelake.dll",
+        "to": "llama/ggml-cpu-cascadelake.dll"
+      },
+      {
+        "from": "llama/ggml-cpu-cooperlake.dll",
+        "to": "llama/ggml-cpu-cooperlake.dll"
+      },
+      {
+        "from": "llama/ggml-cpu-haswell.dll",
+        "to": "llama/ggml-cpu-haswell.dll"
+      },
+      {
+        "from": "llama/ggml-cpu-icelake.dll",
+        "to": "llama/ggml-cpu-icelake.dll"
+      },
+      {
+        "from": "llama/ggml-cpu-ivybridge.dll",
+        "to": "llama/ggml-cpu-ivybridge.dll"
+      },
+      {
+        "from": "llama/ggml-cpu-piledriver.dll",
+        "to": "llama/ggml-cpu-piledriver.dll"
+      },
+      {
+        "from": "llama/ggml-cpu-sandybridge.dll",
+        "to": "llama/ggml-cpu-sandybridge.dll"
+      },
+      {
+        "from": "llama/ggml-cpu-sapphirerapids.dll",
+        "to": "llama/ggml-cpu-sapphirerapids.dll"
+      },
+      {
+        "from": "llama/ggml-cpu-skylakex.dll",
+        "to": "llama/ggml-cpu-skylakex.dll"
+      },
+      {
+        "from": "llama/ggml-cpu-sse42.dll",
+        "to": "llama/ggml-cpu-sse42.dll"
+      },
+      {
+        "from": "llama/ggml-cpu-x64.dll",
+        "to": "llama/ggml-cpu-x64.dll"
+      },
+      {
+        "from": "llama/ggml-cpu-zen4.dll",
+        "to": "llama/ggml-cpu-zen4.dll"
+      },
+      {
+        "from": "llama/ggml-rpc.dll",
+        "to": "llama/ggml-rpc.dll"
+      },
+      {
+        "from": "llama/llama.dll",
+        "to": "llama/llama.dll"
+      },
+      {
+        "from": "llama/libomp140.x86_64.dll",
+        "to": "llama/libomp140.x86_64.dll"
+      },
+      {
+        "from": "llama/mtmd.dll",
+        "to": "llama/mtmd.dll"
+      },
+      {
+        "from": "config/",
+        "to": "config/"
+      }
+    ],
+    "asarUnpack": [
+      "**/*.exe",
+      "**/*.dll"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "824AI",
+      "installerIcon": null,
+      "uninstallerIcon": null,
+      "installerHeader": null,
+      "installerSidebar": null
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^26.6.10",
+    "electron-builder": "^26.7.0"
+  }
+}

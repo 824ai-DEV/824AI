@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>824AI</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+</head>
+<body>
+  <div id="app" class="app-container">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <button id="new-chat-btn" class="new-chat-btn">+ New Chat</button>
+      </div>
+      
+      <div class="sidebar-divider"></div>
+      
+      <div class="sidebar-body">
+        <button id="edit-prompt-btn" class="sidebar-btn">⚙️ System Prompt</button>
+        <button id="profiles-btn" class="sidebar-btn">💾 Profiles</button>
+        <button id="settings-btn" class="sidebar-btn">⚡ Settings</button>
+        <button id="monitor-btn" class="sidebar-btn">📊 Monitor</button>
+        <button id="dark-mode-btn" class="sidebar-btn">🌙 Dark Mode</button>
+        <button id="download-btn" class="sidebar-btn">⬇️ Download Chat</button>
+        <button id="clear-btn" class="sidebar-btn" style="color: #ef4444;">🗑️ Clear Chat</button>
+        <button id="help-btn" class="sidebar-btn">❓ Shortcuts</button>
+      </div>
+
+      <div class="sidebar-divider"></div>
+
+      <div class="folders-section">
+        <div class="folders-header">
+          <span>📁 Folders</span>
+          <button id="new-folder-btn" class="folder-btn-new" title="New folder">+</button>
+        </div>
+        <div id="folders-list" class="folders-list"></div>
+      </div>
+
+      <div class="sidebar-divider"></div>
+
+      <div class="chat-history-section">
+        <div class="chat-history-header">
+          <span>Chat History</span>
+          <button id="clear-history-btn" class="chat-history-clear">×</button>
+        </div>
+        <input type="text" id="chat-search-input" class="chat-search-input" placeholder="Search chats..." />
+        <div id="chat-history-list" class="chat-history-list"></div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="status-indicator" id="status">
+          <span class="status-dot initializing"></span>
+          <span id="status-text">Initializing...</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Chat Area -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="chat-header">
+        <h1>824AI</h1>
+      </header>
+
+      <!-- Chat Messages -->
+      <div id="chat-box" class="chat-box"></div>
+
+      <!-- System Monitor (togglable) -->
+      <div id="monitor-panel" class="monitor-panel hidden">
+        <div class="monitor-header">System Monitor</div>
+        <div class="monitor-grid">
+          <div class="monitor-item">
+            <div class="monitor-label">CPU</div>
+            <div class="monitor-bar"><div id="cpu-bar" class="monitor-fill"></div></div>
+            <div id="cpu-text" class="monitor-value">0%</div>
+          </div>
+          <div class="monitor-item">
+            <div class="monitor-label">RAM</div>
+            <div class="monitor-bar"><div id="ram-bar" class="monitor-fill"></div></div>
+            <div id="ram-text" class="monitor-value">0%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input Area -->
+      <footer class="chat-footer">
+        <div class="input-wrapper">
+          <div class="thinking-mode-selector">
+            <label for="thinking-mode-select">Thinking:</label>
+            <select id="thinking-mode-select" class="thinking-mode-select">
+              <option value="normal">Normal</option>
+              <option value="focused">Focused</option>
+              <option value="deep">Deep Thought</option>
+              <option value="creative">Creative</option>
+            </select>
+          </div>
+          <textarea id="prompt-input" class="prompt-input" placeholder="Message 824AI..." rows="3"></textarea>
+          <div class="button-group">
+            <button id="send-btn" class="send-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 13a10 10 0 0 0 10 10h0m0-10L3 4m10 9h8"></path>
+              </svg>
+            </button>
+            <button id="stop-btn" class="send-btn hidden" style="background: #ef4444;">⏹</button>
+          </div>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- System Prompt Modal -->
+  <div id="prompt-modal" class="modal hidden">
+    <div class="modal-overlay" id="modal-overlay"></div>
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>Edit System Prompt</h2>
+        <button class="modal-close" id="modal-close">✕</button>
+      </div>
+      <textarea id="prompt-textarea" class="prompt-textarea"></textarea>
+      <div class="modal-footer">
+        <button id="modal-cancel" class="modal-btn cancel">Cancel</button>
+        <button id="modal-save" class="modal-btn save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="modal hidden">
+    <div class="modal-overlay" id="settings-modal-overlay"></div>
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>Settings</h2>
+        <button class="modal-close" id="settings-modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-group">
+          <label for="max-tokens-slider">Max Response Tokens</label>
+          <div class="slider-container">
+            <input type="range" id="max-tokens-slider" min="256" max="4096" step="256" value="2048" />
+            <span id="max-tokens-value">2048</span>
+          </div>
+          <p class="settings-hint">Higher = longer responses but slower (256-4096)</p>
+        </div>
+        <div class="settings-group">
+          <label for="temperature-slider">Temperature (Creativity)</label>
+          <div class="slider-container">
+            <input type="range" id="temperature-slider" min="0" max="100" step="5" value="30" />
+            <span id="temperature-value">0.30</span>
+          </div>
+          <p class="settings-hint">Lower = consistent, Higher = creative (0.0-1.0)</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="settings-modal-close-btn" class="modal-btn cancel">Close</button>
+        <button id="settings-modal-save" class="modal-btn save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help/Shortcuts Modal -->
+  <div id="help-modal" class="modal hidden">
+    <div class="modal-overlay" id="help-modal-overlay"></div>
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>Keyboard Shortcuts</h2>
+        <button class="modal-close" id="help-modal-close">✕</button>
+      </div>
+      <div class="modal-body" style="font-size: 13px;">
+        <div class="settings-group">
+          <strong>Chat</strong>
+          <p style="margin: 6px 0;"><code>Enter</code> — Send message (Shift+Enter for newline)</p>
+          <p style="margin: 6px 0;"><code>Ctrl+K</code> — New chat</p>
+          <p style="margin: 6px 0;"><code>Ctrl+D</code> — Download chat</p>
+        </div>
+        <div class="settings-group">
+          <strong>About 824AI</strong>
+          <p style="margin: 6px 0;">Local AI powered by Qwen 7B model</p>
+          <p style="margin: 6px 0;">Runs entirely on your machine (no cloud, no tracking)</p>
+          <p style="margin: 6px 0;">Perfect for code, writing, and thinking</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="help-modal-close-btn" class="modal-btn save">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- License Modal -->
+  <div id="license-modal" class="modal hidden">
+    <div class="modal-overlay" id="license-modal-overlay"></div>
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>824AI — Licensed Software</h2>
+      </div>
+      <div class="modal-body" style="text-align: center; padding: 30px;">
+        <p style="margin-bottom: 20px; font-size: 14px;">Thank you for using 824AI! Please enter your license key to activate.</p>
+        <input type="text" id="license-key-input" placeholder="Enter your license key..." style="width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 20px; font-family: monospace;" />
+        <p id="license-error" style="color: #ef4444; font-size: 12px; margin-bottom: 15px; display: none;"></p>
+        <p style="font-size: 12px; color: #666; margin-bottom: 20px;">Don't have a key? <a href="#" id="license-buy-link" style="color: #10a37f; text-decoration: none;">Purchase here</a></p>
+      </div>
+      <div class="modal-footer">
+        <button id="license-activate-btn" class="modal-btn save">Activate</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profiles Modal -->
+  <div id="profiles-modal" class="modal hidden">
+    <div class="modal-overlay" id="profiles-modal-overlay"></div>
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>Settings Profiles</h2>
+        <button class="modal-close" id="profiles-modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-group">
+          <label>Profile Name</label>
+          <input type="text" id="profile-name-input" placeholder="e.g., Code Mode, Deep Thinking" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; margin-bottom: 10px;" />
+        </div>
+        <div class="settings-group">
+          <label>Saved Profiles</label>
+          <div id="profiles-list" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 8px; margin-bottom: 10px;"></div>
+        </div>
+        <div class="settings-group">
+          <button id="profile-save-btn" class="modal-btn save" style="width: 100%; margin-bottom: 8px;">Save Current as Profile</button>
+          <button id="profile-reset-btn" class="modal-btn cancel" style="width: 100%;">Reset to Default</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="profiles-modal-close-btn" class="modal-btn cancel">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Retry Response Modal -->
+  <div id="retry-modal" class="modal hidden">
+    <div class="modal-overlay" id="retry-modal-overlay"></div>
+    <div class="modal-box" style="max-width: 380px;">
+      <div class="modal-header">
+        <h2>Regenerate Response</h2>
+        <button class="modal-close" id="retry-modal-close">✕</button>
+      </div>
+      <div class="modal-body" style="text-align: center; padding: 20px;">
+        <button id="retry-redo-btn" class="modal-btn save" style="width: 100%; margin-bottom: 10px;">🔄 Redo (Same settings)</button>
+        <button id="retry-longer-btn" class="modal-btn save" style="width: 100%; margin-bottom: 10px;">📝 Longer Response (+50% tokens)</button>
+        <button id="retry-shorter-btn" class="modal-btn save" style="width: 100%; margin-bottom: 10px;">✂️ Shorter Response (-50% tokens)</button>
+      </div>
+      <div class="modal-footer">
+        <button id="retry-modal-close-btn" class="modal-btn cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Folder Management Modal -->
+  <div id="folder-modal" class="modal hidden">
+    <div class="modal-overlay" id="folder-modal-overlay"></div>
+    <div class="modal-box" style="max-width: 400px;">
+      <div class="modal-header">
+        <h2>New Folder</h2>
+        <button class="modal-close" id="folder-modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="folder-name-input" class="modal-input" placeholder="Folder name..." autofocus />
+      </div>
+      <div class="modal-footer">
+        <button id="folder-modal-save-btn" class="modal-btn save">Create</button>
+        <button id="folder-modal-cancel-btn" class="modal-btn cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
