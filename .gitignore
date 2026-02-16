@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist/
+build/
+*.exe
+*.dmg
+*.AppImage
+
+# Large model files
+llama/*.gguf
+llama/llama-server.exe
+
+# OS files
+.DS_Store
+Thumbs.db
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+
+# Code Signing Certificates (keep private)
+*.pfx
+824AI-cert.pfx
+
+# Cache
+.cache/
+*.tmp
+
+# App data (user generated)
+*.db
+*.sqlite
+userData/
